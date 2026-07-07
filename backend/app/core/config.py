@@ -1,0 +1,45 @@
+import json
+from typing import List, TYPE_CHECKING
+
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+if TYPE_CHECKING:
+    BackendCorsOrigins = List[str]
+else:
+    BackendCorsOrigins = List[str] | str
+
+
+class Settings(BaseSettings):
+
+    APP_NAME: str
+    APP_VERSION: str
+    APP_DESCRIPTION: str
+
+    ENVIRONMENT: str
+
+    DEBUG: bool
+
+    API_V1_PREFIX: str
+
+    BACKEND_CORS_ORIGINS: BackendCorsOrigins
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=True
+    )
+
+    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors(cls, value):
+        if isinstance(value, str):
+            if value.startswith("[") and value.endswith("]"):
+                try:
+                    return json.loads(value)
+                except Exception:
+                    pass
+            return [origin.strip() for origin in value.split(",")]
+        return value
+
+
+settings = Settings()
