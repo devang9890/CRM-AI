@@ -15,14 +15,22 @@ class Settings(BaseSettings):
     APP_NAME: str
     APP_VERSION: str
     APP_DESCRIPTION: str
+    
 
     ENVIRONMENT: str
 
     DEBUG: bool
 
     API_V1_PREFIX: str
+    
 
     BACKEND_CORS_ORIGINS: BackendCorsOrigins
+
+    DATABASE_HOST: str
+    DATABASE_PORT: int
+    DATABASE_NAME: str
+    DATABASE_USER: str
+    DATABASE_PASSWORD: str
 
     model_config = SettingsConfigDict(
         env_file=".env",
