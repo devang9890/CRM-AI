@@ -22,12 +22,23 @@ class RefreshTokenRepository:
         user_id: UUID,
         refresh_token: str,
         expires_at: datetime,
+        device_name: str | None = None,
+        browser: str | None = None,
+        operating_system: str | None = None,
+        ip_address: str | None = None,
+        user_agent: str | None = None,
     ) -> RefreshToken:
 
         token = RefreshToken(
             user_id=user_id,
             token_hash=self.hash_token(refresh_token),
             expires_at=expires_at,
+            device_name=device_name,
+            browser=browser,
+            operating_system=operating_system,
+            ip_address=ip_address,
+            user_agent=user_agent,
+            last_used_at=datetime.utcnow(),
         )
 
         self.db.add(token)
@@ -50,6 +61,14 @@ class RefreshTokenRepository:
         )
 
         return result.scalar_one_or_none()
+
+    def update_last_used(
+        self,
+        token: RefreshToken,
+    ) -> None:
+
+        token.last_used_at = datetime.utcnow()
+        self.db.commit()
 
     def revoke(
         self,
