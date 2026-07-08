@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, String
+from sqlalchemy import Boolean, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base_model import BaseModel
@@ -42,6 +42,30 @@ class User(BaseModel):
         Boolean,
         default=True,
         nullable=False,
+    )
+
+    # ----------------------------
+    # Google OAuth Tokens
+    # ----------------------------
+
+    google_access_token: Mapped[str | None] = mapped_column(
+        String,
+        nullable=True,
+    )
+
+    google_refresh_token: Mapped[str | None] = mapped_column(
+        String,
+        nullable=True,
+    )
+
+    google_token_expiry: Mapped[DateTime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+
+    google_scopes: Mapped[str | None] = mapped_column(
+        String,
+        nullable=True,
     )
 
     refresh_tokens: Mapped[list["RefreshToken"]] = relationship(
