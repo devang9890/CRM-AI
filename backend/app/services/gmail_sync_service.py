@@ -19,10 +19,16 @@ class GmailSyncService:
         created = 0
         updated = 0
 
-        message_ids = GmailService.list_message_ids(
-            user=user,
-            max_results=max_results,
-        )
+        if user.gmail_history_id:
+            message_ids = GmailService.list_history(
+                user=user,
+                history_id=user.gmail_history_id,
+            )
+        else:
+            message_ids = GmailService.list_message_ids(
+                user=user,
+                max_results=max_results,
+            )
 
         for item in message_ids:
             gmail = GmailService.get_message(
@@ -61,6 +67,18 @@ class GmailSyncService:
 
             self.repo.save(email)
             updated += 1
+
+        service = GmailService.get_client(user)
+
+        profile = (
+            service.users()
+            .getProfile(userId="me")
+            .execute()
+        )
+
+        user.gmail_history_id = profile["historyId"]
+
+        self.db.commit()
 
         return {
             "total": len(message_ids),

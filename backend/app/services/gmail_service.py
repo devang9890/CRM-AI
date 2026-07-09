@@ -141,3 +141,29 @@ class GmailService:
             )
 
         return messages
+
+    @staticmethod
+    def list_history(
+        user: User,
+        history_id: str,
+    ):
+        service = GmailService.get_client(user)
+
+        response = (
+            service.users()
+            .history()
+            .list(
+                userId="me",
+                startHistoryId=history_id,
+                historyTypes=["messageAdded"],
+            )
+            .execute()
+        )
+
+        messages = []
+
+        for history in response.get("history", []):
+            for message in history.get("messages", []):
+                messages.append(message)
+
+        return messages

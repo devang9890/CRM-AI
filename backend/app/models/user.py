@@ -69,6 +69,11 @@ class User(BaseModel):
         nullable=True,
     )
 
+    gmail_history_id: Mapped[str | None] = mapped_column(
+    String(255),
+    nullable=True,
+)
+
     refresh_tokens: Mapped[list["RefreshToken"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan",
