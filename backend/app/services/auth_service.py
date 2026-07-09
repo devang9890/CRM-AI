@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.models.user import User
 from app.repositories.refresh_token_repository import RefreshTokenRepository
 from app.repositories.user_repository import UserRepository
 from app.schemas.auth import GoogleUser
@@ -33,6 +32,26 @@ class AuthService:
                 email_verified=google_user.email_verified,
             )
 
+        user.email = google_user.email
+        user.full_name = google_user.full_name
+        user.profile_picture = google_user.profile_picture
+        user.email_verified = google_user.email_verified
+
+        user.google_access_token = google_user.google_access_token
+
+        if google_user.google_refresh_token:
+            user.google_refresh_token = google_user.google_refresh_token
+
+        if google_user.google_token_expiry:
+            user.google_token_expiry = datetime.fromtimestamp(
+                google_user.google_token_expiry,
+                tz=timezone.utc,
+            )
+
+        user.google_scopes = google_user.google_scopes
+
+        self.user_repository.update(user)
+
         access_token = JWTManager.generate_access_token(str(user.id))
         refresh_token = JWTManager.generate_refresh_token(str(user.id))
 
@@ -53,11 +72,7 @@ class AuthService:
         }
 
     def refresh_session(self, refresh_token: str) -> dict:
-        """
-        Validates the refresh token and returns a new access/refresh token pair.
-        """
         try:
-            # 1. Verify token signature and claims
             payload = JWTManager.verify_refresh(refresh_token)
             user_id = payload.get("sub")
             if not user_id:
@@ -65,15 +80,15 @@ class AuthService:
         except Exception:
             raise ValueError("Invalid or expired refresh token")
 
-        # 2. Get refresh token from database
         db_token = self.refresh_repository.get_by_token(refresh_token)
         if not db_token:
             raise ValueError("Refresh token not found")
 
         if db_token.is_revoked:
-            # Token reuse detection: if a revoked token is presented, revoke all of user's active tokens for safety
             self.refresh_repository.revoke_all_for_user(db_token.user_id)
-            raise ValueError("Refresh token has been revoked due to potential compromise")
+            raise ValueError(
+                "Refresh token has been revoked due to potential compromise"
+            )
 
         expires_at = db_token.expires_at
         if expires_at.tzinfo is None:
@@ -82,7 +97,6 @@ class AuthService:
         if expires_at < datetime.now(timezone.utc):
             raise ValueError("Refresh token has expired")
 
-        # 3. Rotate tokens: revoke the old one, and create a new pair
         self.refresh_repository.revoke(db_token)
 
         new_access_token = JWTManager.generate_access_token(user_id)

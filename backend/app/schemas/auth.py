@@ -1,5 +1,5 @@
-from uuid import UUID
 from pydantic import BaseModel, ConfigDict, EmailStr
+
 from app.schemas.token import TokenPair
 
 
@@ -9,6 +9,11 @@ class GoogleUser(BaseModel):
     full_name: str
     profile_picture: str | None = None
     email_verified: bool
+
+    google_access_token: str | None = None
+    google_refresh_token: str | None = None
+    google_token_expiry: int | None = None
+    google_scopes: str | None = None
 
 
 class LoginResponse(BaseModel):

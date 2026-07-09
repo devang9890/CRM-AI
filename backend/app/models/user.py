@@ -2,6 +2,7 @@ from sqlalchemy import Boolean, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base_model import BaseModel
+from app.models.email import Email
 from app.models.refresh_token import RefreshToken
 
 
@@ -69,6 +70,11 @@ class User(BaseModel):
     )
 
     refresh_tokens: Mapped[list["RefreshToken"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    emails: Mapped[list["Email"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan",
     )
