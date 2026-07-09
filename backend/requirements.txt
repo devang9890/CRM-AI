@@ -28,3 +28,4 @@ google-auth
 email-validator
 requests
 itsdangerous
+apscheduler==3.11.3

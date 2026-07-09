@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-
+from app.tasks.scheduler import start_scheduler
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -13,6 +13,8 @@ from app.core.logger import logger
 async def lifespan(app: FastAPI):
 
     logger.info("Starting AI CRM Backend...")
+
+    start_scheduler()
 
     yield
 
