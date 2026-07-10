@@ -35,21 +35,26 @@ def get_current_user(
             algorithms=[settings.JWT_ALGORITHM],
         )
 
+        print("JWT Payload:", payload)
+
         user_id = payload.get("sub")
 
         if user_id is None:
-            raise credentials_exception
+            raise Exception("Missing sub claim")
 
         user_id = int(user_id)
 
-    except (JWTError, ValueError):
-        raise credentials_exception
+    except Exception as e:
+        print("JWT ERROR:", repr(e))
+        raise
 
     user = (
         db.query(User)
         .filter(User.id == user_id)
         .first()
     )
+
+    print("Resolved user:", user)
 
     if user is None:
         raise credentials_exception

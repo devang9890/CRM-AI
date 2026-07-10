@@ -1,5 +1,7 @@
 from sqlalchemy import and_, select
 from sqlalchemy.orm import Session
+from app.repositories.email_embedding_repository import EmailEmbeddingRepository
+from app.services.embedding_service import EmbeddingService
 
 from app.models.email import Email
 
@@ -76,6 +78,19 @@ class EmailRepository:
         self.db.commit()
         self.db.refresh(email)
 
+        embedding_service = EmbeddingService()
+
+        embedding = embedding_service.embed(
+            subject=email.subject,
+            sender=email.sender,
+            body=email.body_text or email.snippet,
+        )
+
+        EmailEmbeddingRepository(self.db).update_embedding(
+            email.id,
+            embedding,
+        )
+
         return email
 
     def update(
@@ -84,6 +99,20 @@ class EmailRepository:
     ) -> Email:
         self.db.commit()
         self.db.refresh(email)
+
+        embedding_service = EmbeddingService()
+
+        embedding = embedding_service.embed(
+            subject=email.subject,
+            sender=email.sender,
+            body=email.body_text or email.snippet,
+        )
+
+        EmailEmbeddingRepository(self.db).update_embedding(
+            email.id,
+            embedding,
+        )
+
         return email
 
     def save(
@@ -93,4 +122,18 @@ class EmailRepository:
         self.db.add(email)
         self.db.commit()
         self.db.refresh(email)
+
+        embedding_service = EmbeddingService()
+
+        embedding = embedding_service.embed(
+            subject=email.subject,
+            sender=email.sender,
+            body=email.body_text or email.snippet,
+        )
+
+        EmailEmbeddingRepository(self.db).update_embedding(
+            email.id,
+            embedding,
+        )
+
         return email

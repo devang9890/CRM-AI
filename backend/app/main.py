@@ -3,11 +3,13 @@ from app.tasks.scheduler import start_scheduler
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+from app.api.v1.semantic_search import router as semantic_router
 
 from app.api.router import api_router
 from app.core.config import settings
 from app.core.logger import logger
 
+api_router.include_router(semantic_router)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -19,6 +21,7 @@ async def lifespan(app: FastAPI):
     yield
 
     logger.info("Stopping AI CRM Backend...")
+
 
 
 app = FastAPI(
