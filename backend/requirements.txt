@@ -31,3 +31,4 @@ itsdangerous
 apscheduler==3.11.3
 pgvector
 sentence-transformers
+google-generativeai

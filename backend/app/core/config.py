@@ -1,7 +1,7 @@
 import json
 from typing import List, TYPE_CHECKING
 
-from pydantic import field_validator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 if TYPE_CHECKING:
@@ -55,6 +55,12 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_SECRET: str
     GOOGLE_REDIRECT_URI: str
     DEV_RETURN_JSON_AUTH: bool = True
+
+    # ==========================================
+    # Gemini
+    # ==========================================
+    gemini_api_key: str = Field(validation_alias="GEMINI_API_KEY")
+    gemini_model: str = Field(default="gemini-2.5-flash", validation_alias="GEMINI_MODEL")
 
     model_config = SettingsConfigDict(
         env_file=".env",
