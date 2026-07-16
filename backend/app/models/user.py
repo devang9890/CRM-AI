@@ -1,6 +1,8 @@
 from sqlalchemy import Boolean, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from google.oauth2.credentials import Credentials
 
+from app.core.config import settings
 from app.models.base_model import BaseModel
 from app.models.email import Email
 from app.models.refresh_token import RefreshToken
@@ -83,3 +85,13 @@ class User(BaseModel):
         back_populates="user",
         cascade="all, delete-orphan",
     )
+
+    def get_google_credentials(self) -> Credentials:
+        return Credentials(
+            token=self.google_access_token,
+            refresh_token=self.google_refresh_token,
+            token_uri="https://oauth2.googleapis.com/token",
+            client_id=settings.GOOGLE_CLIENT_ID,
+            client_secret=settings.GOOGLE_CLIENT_SECRET,
+            scopes=self.google_scopes.split() if self.google_scopes else [],
+        )
