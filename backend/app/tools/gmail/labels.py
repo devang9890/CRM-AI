@@ -36,21 +36,27 @@ class LabelEmailTool(CRMTool):
         add_labels = add_labels or []
         remove_labels = remove_labels or []
 
-        for label in add_labels:
-            self._gmail.add_label(
-                message_id=message_id,
-                label_id=label,
-            )
+        try:
+            for label in add_labels:
+                self._gmail.add_label(
+                    message_id=message_id,
+                    label_id=label,
+                )
 
-        for label in remove_labels:
-            self._gmail.remove_label(
-                message_id=message_id,
-                label_id=label,
-            )
+            for label in remove_labels:
+                self._gmail.remove_label(
+                    message_id=message_id,
+                    label_id=label,
+                )
 
-        return {
-            "message_id": message_id,
-            "added_labels": add_labels,
-            "removed_labels": remove_labels,
-            "status": "labels_updated",
-        }
+            return {
+                "message_id": message_id,
+                "added_labels": add_labels,
+                "removed_labels": remove_labels,
+                "status": "labels_updated",
+            }
+        except Exception as e:
+            return {
+                "error": f"Failed to modify labels. The message ID '{message_id}' might be invalid or mock. Details: {str(e)}",
+                "message_id": message_id,
+            }

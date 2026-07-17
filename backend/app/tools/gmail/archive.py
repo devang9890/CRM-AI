@@ -29,9 +29,14 @@ class ArchiveEmailTool(CRMTool):
         self,
         message_id: str,
     ) -> dict:
-        self._gmail.archive_email(message_id)
-
-        return {
-            "message_id": message_id,
-            "status": "archived",
-        }
+        try:
+            self._gmail.archive_email(message_id)
+            return {
+                "message_id": message_id,
+                "status": "archived",
+            }
+        except Exception as e:
+            return {
+                "error": f"Failed to archive email. The message ID '{message_id}' might be invalid or mock. Details: {str(e)}",
+                "message_id": message_id,
+            }

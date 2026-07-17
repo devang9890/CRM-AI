@@ -56,7 +56,7 @@ class SemanticSearchTool(CRMTool):
                 body = body[:1000] + "... [Content Truncated due to Length]"
                 
             formatted_results.append({
-                "id": email.id,
+                "id": email.gmail_message_id,
                 "subject": email.subject,
                 "sender": email.sender,
                 "snippet": email.snippet,

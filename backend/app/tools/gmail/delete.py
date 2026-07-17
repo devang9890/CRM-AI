@@ -29,9 +29,14 @@ class DeleteEmailTool(CRMTool):
         self,
         message_id: str,
     ) -> dict:
-        self._gmail.delete_email(message_id)
-
-        return {
-            "message_id": message_id,
-            "status": "deleted",
-        }
+        try:
+            self._gmail.delete_email(message_id)
+            return {
+                "message_id": message_id,
+                "status": "deleted",
+            }
+        except Exception as e:
+            return {
+                "error": f"Failed to delete email. The message ID '{message_id}' might be invalid or mock. Details: {str(e)}",
+                "message_id": message_id,
+            }

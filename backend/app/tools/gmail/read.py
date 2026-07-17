@@ -32,23 +32,28 @@ class ReadEmailTool(CRMTool):
         self,
         message_id: str,
     ) -> dict:
-        email = self._gmail.read_email(message_id)
+        try:
+            email = self._gmail.read_email(message_id)
+            headers = email.get("payload", {}).get("headers", [])
 
-        headers = email.get("payload", {}).get("headers", [])
+            def header(name: str):
+                for h in headers:
+                    if h["name"].lower() == name.lower():
+                        return h["value"]
+                return ""
 
-        def header(name: str):
-            for h in headers:
-                if h["name"].lower() == name.lower():
-                    return h["value"]
-            return ""
-
-        return {
-            "id": email["id"],
-            "thread_id": email["threadId"],
-            "subject": header("Subject"),
-            "from": header("From"),
-            "to": header("To"),
-            "date": header("Date"),
-            "snippet": email.get("snippet", ""),
-            "labels": email.get("labelIds", []),
-        }
+            return {
+                "id": email["id"],
+                "thread_id": email["threadId"],
+                "subject": header("Subject"),
+                "from": header("From"),
+                "to": header("To"),
+                "date": header("Date"),
+                "snippet": email.get("snippet", ""),
+                "labels": email.get("labelIds", []),
+            }
+        except Exception as e:
+            return {
+                "error": f"Failed to retrieve message details from Gmail. The message ID '{message_id}' might be invalid or mock. Details: {str(e)}",
+                "message_id": message_id,
+            }
