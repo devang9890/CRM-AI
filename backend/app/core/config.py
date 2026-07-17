@@ -57,10 +57,13 @@ class Settings(BaseSettings):
     DEV_RETURN_JSON_AUTH: bool = True
 
     # ==========================================
-    # Gemini
+    # LLM Config (Gemini / Groq)
     # ==========================================
-    gemini_api_key: str = Field(validation_alias="GEMINI_API_KEY")
+    gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
     gemini_model: str = Field(default="gemini-2.5-flash", validation_alias="GEMINI_MODEL")
+    
+    groq_api_key: str | None = Field(default=None, validation_alias="GROQ_API_KEY")
+    groq_model: str = Field(default="llama-3.3-70b-versatile", validation_alias="GROQ_MODEL")
 
     model_config = SettingsConfigDict(
         env_file=".env",

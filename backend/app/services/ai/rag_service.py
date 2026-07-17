@@ -2,25 +2,46 @@ from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
-from app.services.agent.graph import CRMAgent
+from app.agent.agent import CRMAgent
+from app.db.database import SessionLocal
+from app.models.user import User
 
 
 class RAGService:
-    def __init__(self, db: Session):
-        self.agent = CRMAgent(db)
+    """
+    RAG service that wraps the CRM agent and manages database connection lifecycles.
+    """
+
+    def __init__(
+        self,
+        user: User,
+        db: Session | None = None,
+    ):
+        self.user = user
+        self._own_db = False
+
+        if db is None:
+            self.db = SessionLocal()
+            self._own_db = True
+        else:
+            self.db = db
+
+        self.agent = CRMAgent(user, self.db)
 
     def ask(
         self,
-        user_id: int,
         question: str,
+        thread_id: str,
     ) -> dict:
-        result = self.agent.run(
-            user_id=user_id,
-            question=question,
-        )
+        try:
+            answer = self.agent.invoke(
+                question=question,
+                thread_id=thread_id,
+            )
 
-        return {
-            "question": question,
-            "answer": result["answer"],
-            "context": result["context"],
-        }
+            return {
+                "answer": answer,
+            }
+        finally:
+            if self._own_db:
+                self.db.close()
