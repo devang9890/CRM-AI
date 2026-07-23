@@ -56,8 +56,10 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
-        // Redirect to login on refresh failure
-        window.location.href = '/login';
+        // Redirect to login on refresh failure, but only if not already on /login page
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

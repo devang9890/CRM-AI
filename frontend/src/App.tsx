@@ -49,8 +49,8 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#FFFFFF' }}>
+        <Loader2 className="h-8 w-8 animate-spin" style={{ color: '#2563EB' }} />
       </div>
     );
   }
