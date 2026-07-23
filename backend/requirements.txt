@@ -37,3 +37,8 @@ python-jose[cryptography]
 python-multipart
 passlib[bcrypt]
 bcrypt
+langchain-core
+langchain-groq
+langchain-google-genai
+langgraph
+google-api-python-client
