@@ -33,9 +33,10 @@ apscheduler==3.11.3
 pgvector
 sentence-transformers
 google-generativeai
-python-jose[cryptography]
+python-jose
+cryptography
 python-multipart
-passlib[bcrypt]
+passlib
 bcrypt
 langchain-core
 langchain-groq
