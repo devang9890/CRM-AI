@@ -20,10 +20,20 @@ class GmailSyncService:
         updated = 0
 
         if user.gmail_history_id:
-            message_ids = GmailService.list_history(
-                user=user,
-                history_id=user.gmail_history_id,
-            )
+            try:
+                message_ids = GmailService.list_history(
+                    user=user,
+                    history_id=user.gmail_history_id,
+                )
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning(
+                    f"Failed to fetch history for user {user.id}, falling back to full sync: {e}"
+                )
+                message_ids = GmailService.list_message_ids(
+                    user=user,
+                    max_results=max_results,
+                )
         else:
             message_ids = GmailService.list_message_ids(
                 user=user,

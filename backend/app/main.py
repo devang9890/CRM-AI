@@ -11,10 +11,16 @@ from app.core.logger import logger
 
 api_router.include_router(semantic_router)
 
+from app.services.embedding_service import get_embedding_model
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 
     logger.info("Starting AI CRM Backend...")
+
+    logger.info("Loading embedding model...")
+    get_embedding_model()
+    logger.info("Embedding model loaded.")
 
     start_scheduler()
 

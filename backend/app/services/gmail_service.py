@@ -149,21 +149,29 @@ class GmailService:
     ):
         service = GmailService.get_client(user)
 
-        response = (
-            service.users()
-            .history()
-            .list(
-                userId="me",
-                startHistoryId=history_id,
-                historyTypes=["messageAdded"],
-            )
-            .execute()
-        )
-
         messages = []
+        page_token = None
 
-        for history in response.get("history", []):
-            for message in history.get("messages", []):
-                messages.append(message)
+        while True:
+            response = (
+                service.users()
+                .history()
+                .list(
+                    userId="me",
+                    startHistoryId=history_id,
+                    historyTypes=["messageAdded"],
+                    pageToken=page_token,
+                )
+                .execute()
+            )
+
+            for history in response.get("history", []):
+                for added in history.get("messagesAdded", []):
+                    if "message" in added:
+                        messages.append(added["message"])
+
+            page_token = response.get("nextPageToken")
+            if not page_token:
+                break
 
         return messages
