@@ -12,8 +12,9 @@ def get_embedding_model() -> SentenceTransformer:
 
 
 class EmbeddingService:
-    def __init__(self):
-        self.model = get_embedding_model()
+    @property
+    def model(self):
+        return get_embedding_model()
 
     def build_text(
         self,
