@@ -35,3 +35,5 @@ sentence-transformers
 google-generativeai
 python-jose[cryptography]
 python-multipart
+passlib[bcrypt]
+bcrypt
