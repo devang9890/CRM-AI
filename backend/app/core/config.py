@@ -32,11 +32,12 @@ class Settings(BaseSettings):
     # ==========================================
     # PostgreSQL
     # ==========================================
-    DATABASE_HOST: str
-    DATABASE_PORT: int
-    DATABASE_NAME: str
-    DATABASE_USER: str
-    DATABASE_PASSWORD: str
+    DATABASE_URL: str | None = None
+    DATABASE_HOST: str = "localhost"
+    DATABASE_PORT: int = 5432
+    DATABASE_NAME: str = "postgres"
+    DATABASE_USER: str = "postgres"
+    DATABASE_PASSWORD: str = ""
 
     # ==========================================
     # JWT

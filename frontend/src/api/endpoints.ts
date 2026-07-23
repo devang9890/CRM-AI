@@ -16,7 +16,7 @@ export const gmailApi = {
   getEmail: (id: number) =>
     api.get<EmailDetail>(`/gmail/emails/${id}`),
 
-  sync: (maxResults = 100) =>
+  sync: (maxResults = 25) =>
     api.post('/gmail/sync', null, { params: { max_results: maxResults } }),
 };
 

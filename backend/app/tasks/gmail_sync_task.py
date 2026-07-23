@@ -20,7 +20,7 @@ def sync_all_users():
 
         for user in users:
             try:
-                GmailSyncService(db).sync(user=user)
+                GmailSyncService(db).sync(user=user, max_results=15)
             except Exception as e:
                 print(
                     f"Gmail sync failed for user {user.id}: {e}"

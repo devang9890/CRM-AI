@@ -32,20 +32,27 @@ export default function DashboardPage() {
 
   const fetchEmails = async () => {
     try {
-      setLoading(true);
+      if (emails.length === 0) setLoading(true);
       const { data } = await gmailApi.getEmails(20, 0);
       setEmails(data);
+      if (data.length === 0 && !syncing) {
+        setSyncing(true);
+        await gmailApi.sync(25);
+        const refreshed = await gmailApi.getEmails(20, 0);
+        setEmails(refreshed.data);
+      }
     } catch {
       // silently handle
     } finally {
       setLoading(false);
+      setSyncing(false);
     }
   };
 
   const handleSync = async () => {
     setSyncing(true);
     try {
-      await gmailApi.sync(100);
+      await gmailApi.sync(25);
       await fetchEmails();
     } finally {
       setSyncing(false);

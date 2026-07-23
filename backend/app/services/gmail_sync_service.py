@@ -6,6 +6,9 @@ from app.services.gmail_parser import GmailParser
 from app.services.gmail_service import GmailService
 
 
+from app.services.embedding_service import EmbeddingService
+
+
 class GmailSyncService:
     def __init__(self, db: Session):
         self.db = db
@@ -14,10 +17,11 @@ class GmailSyncService:
     def sync(
         self,
         user: User,
-        max_results: int = 100,
+        max_results: int = 25,
     ):
         created = 0
         updated = 0
+        embedding_service = EmbeddingService()
 
         if user.gmail_history_id:
             try:
@@ -56,6 +60,7 @@ class GmailSyncService:
             if email is None:
                 self.repo.create(
                     user_id=user.id,
+                    embedding_service=embedding_service,
                     **parsed,
                 )
                 created += 1
@@ -75,7 +80,7 @@ class GmailSyncService:
             email.internal_date = parsed["internal_date"]
             email.history_id = parsed["history_id"]
 
-            self.repo.save(email)
+            self.repo.save(email, embedding_service=embedding_service)
             updated += 1
 
         service = GmailService.get_client(user)

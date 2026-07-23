@@ -54,7 +54,16 @@ class EmailRepository:
         is_unread: bool,
         internal_date: str | None,
         history_id: str | None,
+        embedding_service: EmbeddingService | None = None,
     ) -> Email:
+        if embedding_service is None:
+            embedding_service = EmbeddingService()
+
+        embedding = embedding_service.embed(
+            subject=subject,
+            sender=sender,
+            body=body_text or snippet,
+        )
 
         email = Email(
             user_id=user_id,
@@ -72,68 +81,26 @@ class EmailRepository:
             is_unread=is_unread,
             internal_date=internal_date,
             history_id=history_id,
+            embedding=embedding,
         )
 
         self.db.add(email)
-        self.db.commit()
-        self.db.refresh(email)
-
-        embedding_service = EmbeddingService()
-
-        embedding = embedding_service.embed(
-            subject=email.subject,
-            sender=email.sender,
-            body=email.body_text or email.snippet,
-        )
-
-        EmailEmbeddingRepository(self.db).update_embedding(
-            email.id,
-            embedding,
-        )
-
-        return email
-
-    def update(
-        self,
-        email: Email,
-    ) -> Email:
-        self.db.commit()
-        self.db.refresh(email)
-
-        embedding_service = EmbeddingService()
-
-        embedding = embedding_service.embed(
-            subject=email.subject,
-            sender=email.sender,
-            body=email.body_text or email.snippet,
-        )
-
-        EmailEmbeddingRepository(self.db).update_embedding(
-            email.id,
-            embedding,
-        )
-
         return email
 
     def save(
         self,
         email: Email,
+        embedding_service: EmbeddingService | None = None,
     ) -> Email:
-        self.db.add(email)
-        self.db.commit()
-        self.db.refresh(email)
-
-        embedding_service = EmbeddingService()
+        if embedding_service is None:
+            embedding_service = EmbeddingService()
 
         embedding = embedding_service.embed(
             subject=email.subject,
             sender=email.sender,
             body=email.body_text or email.snippet,
         )
+        email.embedding = embedding
 
-        EmailEmbeddingRepository(self.db).update_embedding(
-            email.id,
-            embedding,
-        )
-
+        self.db.add(email)
         return email

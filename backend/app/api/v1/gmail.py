@@ -40,7 +40,7 @@ async def list_messages(
 
 @router.post("/sync")
 async def sync_gmail(
-    max_results: int = 100,
+    max_results: int = 25,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):

@@ -4,6 +4,9 @@ from sqlalchemy.orm import Session
 from app.models.email import Email
 
 
+from sqlalchemy.orm import defer
+
+
 class EmailReadRepository:
     def __init__(self, db: Session):
         self.db = db
@@ -16,8 +19,13 @@ class EmailReadRepository:
     ) -> list[Email]:
         result = self.db.execute(
             select(Email)
+            .options(
+                defer(Email.body_html),
+                defer(Email.body_text),
+                defer(Email.embedding),
+            )
             .where(Email.user_id == user_id)
-            .order_by(desc(Email.internal_date))
+            .order_by(desc(Email.id))
             .offset(offset)
             .limit(limit)
         )
