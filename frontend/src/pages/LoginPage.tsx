@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView, type Variants } from 'framer-motion';
 import {
   ArrowRight,
   Mail,
@@ -140,21 +140,21 @@ const TRUSTED_LOGOS = [
    ANIMATION VARIANTS
    ============================================================ */
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] } },
 };
 
-const fadeIn = {
+const fadeIn: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 0.6 } },
 };
 
-const stagger = {
+const stagger: Variants = {
   visible: { transition: { staggerChildren: 0.08 } },
 };
 
-const scaleIn = {
+const scaleIn: Variants = {
   hidden: { opacity: 0, scale: 0.9 },
   visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } },
 };
@@ -349,7 +349,7 @@ export default function LoginPage() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   const handleGoogleLogin = () => {
-    window.location.href = `${BACKEND_AUTH_URL}/auth/google/login`;
+    window.location.href = `${BACKEND_AUTH_URL}/api/v1/auth/google/login`;
   };
 
   useEffect(() => {

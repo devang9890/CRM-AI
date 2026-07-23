@@ -2,7 +2,7 @@
 export const API_BASE_URL = '/api/v1';
 
 // Full backend origin for OAuth redirects (browser must hit backend directly)
-export const BACKEND_AUTH_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+export const BACKEND_AUTH_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export const ROUTES = {
   LOGIN: '/login',
